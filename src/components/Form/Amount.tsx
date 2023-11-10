@@ -22,6 +22,7 @@ const AmountInput: React.FC<AmountInputProps> = ({ onChange }) => {
         value={amount}
         onChange={handleAmountChange}
         sx={{ mr: 1 }}
+        size="small"
       />
     </Box>
   );
