@@ -13,8 +13,10 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({ totalAmount }) => {
     firstName: yup.string().required("First Name is required"),
     lastName: yup.string().required("Last Name is required"),
     address: yup.string().required("Address is required"),
-    cardNumber: yup.string().required("Credit Card Number is required"),
-    // .matches(/^\d{20}$/, "Must be 16 digits"),
+    cardNumber: yup
+      .string()
+      .required("Credit Card Number is required")
+      .matches(/^\d{16}$/, "Must be 16 digits"),
     exp: yup
       .string()
       .required("Expiration Date is required")
@@ -117,7 +119,7 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({ totalAmount }) => {
         <TextField
           placeholder="Credit Card Number"
           variant="outlined"
-          type="text"
+          type="number"
           fullWidth
           onChange={(e) => {
             const input = e.target.value.replace(/\s/g, "").substr(0, 19);
