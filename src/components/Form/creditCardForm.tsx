@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box, Typography, TextField, Button } from "@mui/material";
-import { useFormik } from "formik";
+import { useFormik, FormikValues } from "formik";
 import * as yup from "yup";
 
 interface CreditCardFormProps {
@@ -8,6 +8,8 @@ interface CreditCardFormProps {
 }
 
 const CreditCardForm: React.FC<CreditCardFormProps> = ({ totalAmount }) => {
+  const [formattedCardNumber, setFormattedCardNumber] = useState("");
+
   const validationSchema = yup.object().shape({
     total: yup.number().required(),
     firstName: yup.string().required("First Name is required"),
@@ -27,7 +29,7 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({ totalAmount }) => {
       .matches(/^\d{3}$/, "Must be 3 digits"),
   });
 
-  const formik = useFormik({
+  const formik = useFormik<FormikValues>({
     initialValues: {
       total: totalAmount || 0,
       firstName: "",
@@ -74,7 +76,11 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({ totalAmount }) => {
             className="bg-white"
             size="small"
             error={formik.touched.firstName && !!formik.errors.firstName}
-            helperText={formik.touched.firstName && formik.errors.firstName}
+            helperText={
+              formik.touched.firstName &&
+              formik.errors.firstName &&
+              String(formik.errors.firstName)
+            }
           />
           <TextField
             placeholder="Last Name"
@@ -86,7 +92,11 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({ totalAmount }) => {
             className="bg-white"
             size="small"
             error={formik.touched.lastName && !!formik.errors.lastName}
-            helperText={formik.touched.lastName && formik.errors.lastName}
+            helperText={
+              formik.touched.lastName &&
+              formik.errors.lastName &&
+              String(formik.errors.lastName)
+            }
           />
         </Box>
 
@@ -103,7 +113,11 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({ totalAmount }) => {
           className="bg-white"
           size="small"
           error={formik.touched.address && !!formik.errors.address}
-          helperText={formik.touched.address && formik.errors.address}
+          helperText={
+            formik.touched.address &&
+            formik.errors.address &&
+            String(formik.errors.address)
+          }
         />
 
         {/* Payment Details */}
@@ -116,16 +130,20 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({ totalAmount }) => {
         </Typography>
 
         {/* Credit Card Number */}
+
         <TextField
           placeholder="Credit Card Number"
           variant="outlined"
-          type="number"
+          type="text"
           fullWidth
           onChange={(e) => {
-            const input = e.target.value.replace(/\s/g, "").substr(0, 19);
-            const formattedValue = input.replace(/(\d{4})/g, "$1 ").trim();
+            // Remove non-digit characters
+            const input = e.target.value.replace(/\D/g, "").substr(0, 16);
             formik.setFieldValue("cardNumber", input);
-            e.target.value = formattedValue;
+
+            // Update the state variable for the formatted value
+            const formattedValue = input.replace(/(\d{4})/g, "$1 ").trim();
+            setFormattedCardNumber(formattedValue);
           }}
           onBlur={(e) => {
             formik.setFieldValue(
@@ -133,14 +151,18 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({ totalAmount }) => {
               e.target.value.replace(/\s/g, "")
             );
           }}
-          value={formik.values.cardNumber}
+          value={formattedCardNumber}
           name="cardNumber"
           error={formik.touched.cardNumber && !!formik.errors.cardNumber}
-          helperText={formik.touched.cardNumber && formik.errors.cardNumber}
+          helperText={
+            formik.touched.cardNumber &&
+            formik.errors.cardNumber &&
+            String(formik.errors.cardNumber)
+          }
           className="bg-white"
           size="small"
           inputProps={{
-            maxLength: 16,
+            maxLength: 19,
           }}
         />
 
@@ -164,7 +186,11 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({ totalAmount }) => {
             value={formik.values.exp}
             name="exp"
             error={formik.touched.exp && !!formik.errors.exp}
-            helperText={formik.touched.exp && formik.errors.exp}
+            helperText={
+              formik.touched.exp &&
+              formik.errors.exp &&
+              String(formik.errors.exp)
+            }
             className="bg-white"
             size="small"
             sx={{ marginRight: 2 }}
@@ -177,7 +203,11 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({ totalAmount }) => {
             variant="outlined"
             {...formik.getFieldProps("cvv")}
             error={formik.touched.cvv && !!formik.errors.cvv}
-            helperText={formik.touched.cvv && formik.errors.cvv}
+            helperText={
+              formik.touched.cvv &&
+              formik.errors.cvv &&
+              String(formik.errors.cvv)
+            }
             className="bg-white"
             size="small"
             inputProps={{
